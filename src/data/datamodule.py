@@ -255,16 +255,17 @@ class VQADataset(Dataset):
         # Frame cache: raw binary cache on NVMe for CVQM evaluation acceleration.
         self.frame_cache_root = str(frame_cache_root).strip() if frame_cache_root else None
         if self.frame_cache_root and not os.path.isdir(self.frame_cache_root):
-            _msg = f"[FrameCache] ★ cache_root does NOT exist, DISABLED: {self.frame_cache_root}"
-            logger.warning(_msg)
-            print(_msg, flush=True)
+            logger.warning(
+                "[FrameCache] cache_root does not exist, disabled: %s",
+                self.frame_cache_root,
+            )
             self.frame_cache_root = None
         elif self.frame_cache_root:
-            _msg = f"[FrameCache] ★ cache_root EXISTS, ENABLED: {self.frame_cache_root}"
-            logger.info(_msg)
-            print(_msg, flush=True)
+            logger.info(
+                "[FrameCache] cache_root enabled: %s", self.frame_cache_root,
+            )
         else:
-            print("[FrameCache] ★ No frame_cache_root configured (cache OFF)", flush=True)
+            logger.debug("[FrameCache] no frame_cache_root configured (cache off)")
         self._frame_cache_logged = False
         self._frame_cache_miss_logged = False  # Whether the first miss has been logged
         self.sampled_clip_cache_mode = str(sampled_clip_cache_mode or 'off').lower().strip()
@@ -1655,12 +1656,11 @@ class VQADataset(Dataset):
         if not os.path.isfile(cache_path):
             if not self._frame_cache_miss_logged:
                 self._frame_cache_miss_logged = True
-                _msg = (f"[FrameCache] ★ First cache MISS: file not found → fallback to live decode\n"
-                        f"  cache_root={self.frame_cache_root}\n"
-                        f"  expected_path={cache_path}\n"
-                        f"  dataset={ds_name} vid={vid} clip={clip_idx} is_ref={is_ref}")
-                logger.warning(_msg)
-                print(_msg, flush=True)
+                logger.warning(
+                    "[FrameCache] first cache miss (file not found) — falling back "
+                    "to live decode: dataset=%s vid=%s clip=%s is_ref=%s",
+                    ds_name, vid, clip_idx, is_ref,
+                )
             self.__class__._frame_cache_miss_count += 1
             return None
 
@@ -1685,11 +1685,11 @@ class VQADataset(Dataset):
             total = self.__class__._frame_cache_hit_count + self.__class__._frame_cache_miss_count
             if not self._frame_cache_logged:
                 self._frame_cache_logged = True
-                _msg = (f"[FrameCache] ★ First cache HIT: reading from .bin cache\n"
-                        f"  path={cache_path}\n"
-                        f"  dataset={ds_name} vid={vid} clip={clip_idx} is_ref={is_ref}")
-                logger.info(_msg)
-                print(_msg, flush=True)
+                logger.info(
+                    "[FrameCache] first cache hit — reading from .bin cache: "
+                    "dataset=%s vid=%s clip=%s is_ref=%s",
+                    ds_name, vid, clip_idx, is_ref,
+                )
             if total % self.__class__._frame_cache_log_interval == 0:
                 hit = self.__class__._frame_cache_hit_count
                 miss = self.__class__._frame_cache_miss_count

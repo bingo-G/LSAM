@@ -2,8 +2,9 @@
 Backbone registry and factory.
 
 This release only ships the **PE** backbone family (PE-Core B16 / L14 / etc.),
-which is what the SD3 / ZG2 / LSAM recipes use. SwinV2 and ConvNeXtV2 backbones
-were removed; the factory raises ``ValueError`` for any non-PE variant string.
+which is what the released LSAM configuration uses. SwinV2 and ConvNeXtV2
+backbones were removed; the factory raises ``ValueError`` for any non-PE
+variant string.
 
 All PE backbones share a common interface:
   - __init__(variant, pretrained, weights_path, **kwargs)

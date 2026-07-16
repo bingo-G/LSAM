@@ -206,7 +206,7 @@ class HMFVQA(nn.Module):
         # VIF / Detail branches removed in this release. The placeholders
         # below keep the downstream fusion code path identical to the
         # original implementation (which also skipped both branches under
-        # the SD3 / ZG2 / LSAM configs because ``branches=semantic``).
+        # the released LSAM config because ``branches=semantic``).
         vif_feat = None
         detail_feat = None
         # NOTE: ``use_only_vif_branch`` / ``vif_mode_override`` /

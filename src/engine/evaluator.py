@@ -100,7 +100,7 @@ def _apply_gpu_preprocess_legacy_pe(
             isinstance(raw_v_dis, torch.Tensor)):
         return None
 
-    # Only support the SD3-eval layout: single-clip, stack mode (5D+B = 6D).
+    # Only support the released eval layout: single-clip, stack mode (5D+B = 6D).
     existing = spatial_info.get('resize_dis', None)
     if not (isinstance(existing, torch.Tensor) and existing.dim() == 6):
         return None  # not the legacy_pe + stack layout → skip silently.
@@ -118,10 +118,10 @@ def _apply_gpu_preprocess_legacy_pe(
     # ``_sample_semantic_gmsavg`` (legacy_pe).  We read them off the
     # existing resize_dis shape + the raw Y tensor; grid_size/ppf have
     # to be provided externally because they aren't shape-encoded.
-    # Fall back to the canonical SD3 defaults (grid=7, ppf=P).
+    # Fall back to the canonical LSAM defaults (grid=7, ppf=P).
     grid_size = 7
     patches_per_frame = int(P)
-    semantic_target_size = int(ph)  # SD3: ph == ts == 224
+    semantic_target_size = int(ph)  # LSAM config: ph == ts == 224
 
     # Decode UV upsample mode from the tagged int the dataset attached
     # (0=bilinear, 1=bicubic, 2=nearest).  Must match the CPU reader so
@@ -1140,7 +1140,7 @@ def _pool_recency_softmin(clip_scores: torch.Tensor,
 
 
 # ---------------------------------------------------------------------------
-# New pooling strategies (matching test_time_vqa_multi_strategy.md)
+# Extra pooling strategies used by the M-series TTA schemes below.
 # ---------------------------------------------------------------------------
 
 @register_tta_pooling('mean_softmin_fused')
@@ -1496,9 +1496,9 @@ TTA_SCHEMES = {
         'description': '8 clips, adaptive + horizontal flip TTA',
     },
     # ======================================================================
-    # M-series: Multi-strategy ablation schemes (test_time_vqa_multi_strategy.md)
-    # Strictly corresponds to Schemes 0-7, 10 in the markdown doc
-    # All schemes use 8 adjacent-frame clips, matching the training distribution
+    # M-series: multi-strategy TTA schemes (Schemes 0-7, 10).
+    # All schemes use 8 adjacent-frame clips, matching the training
+    # distribution.
     # ======================================================================
     # ── Scheme 0: Baseline ──
     'M0_baseline_center': {
@@ -2716,9 +2716,8 @@ def evaluate_cvqm_by_phase(
     )
 
     # ── Per-phase 5PL fitting (Phase1 5PL alone + Phase2 5PL alone) ──
-    # Consistent with collect_sd3_results.py / generate_clean.py:
-    #   Each phase independently performs 5PL fitting internally; the total stage computes metrics on the concatenation of fitted scores.
-    #   This adapts to the score-distribution differences across phases better than "global 5PL → slice".
+    # Each phase independently performs 5PL fitting internally; the total
+    # stage computes metrics on the concatenation of fitted scores.
     stages = np.array([r.get('stage', None) for r in per_video])
     targets = np.array([r['mos'] for r in per_video])
     preds_raw = np.array([r['pred_raw'] for r in per_video])

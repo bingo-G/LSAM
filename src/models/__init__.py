@@ -14,9 +14,9 @@ __all__ = [
 def build_model(cfg):
     """Build the HMFVQA model from config.
 
-    This release only ships the FR PE-semantic path (SD3 / ZG2 / LSAM recipes).
-    Earlier NR-only model variants and the VIF / Detail branches have been
-    removed; all other code paths in the original codebase reduced to no-ops
-    under the released configs, so behaviour is bit-identical.
+    This release only ships the FR PE-semantic path (the released LSAM
+    configuration). Earlier NR-only model variants and the VIF / Detail
+    branches have been removed; all other code paths reduced to no-ops
+    under the released config, so behaviour is bit-identical.
     """
     return HMFVQA(cfg)

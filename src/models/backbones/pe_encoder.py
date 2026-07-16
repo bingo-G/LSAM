@@ -34,8 +34,6 @@ def _collect_pe_src_candidates():
         os.path.join(_PROJECT_ROOT, 'PE', 'perception_models'),
         os.path.join(_PROJECT_ROOT, 'third_party', 'perception_models'),
         os.path.join(_PROJECT_ROOT, '..', 'PE', 'perception_models'),
-        os.path.join(_PROJECT_ROOT, '..', 'Ali_InternVideo_PE', 'perception_models'),
-        os.path.join(_PROJECT_ROOT, '..', 'Ali_InternVideo_PE', 'PE', 'perception_models'),
     ]
     out = []
     seen = set()
@@ -74,11 +72,10 @@ except ImportError as _e:
 
 def _resolve_weights(variant: str, explicit_path: str = None) -> str | None:
     """Resolve weight file path with fallback chain:
-    1. explicit_path (CLI --pe_weights) — fallback if specified but missing
-    2. hmf_vqa/weights/PE_visual_only.pth  (common name, highest priority)
-    3. hmf_vqa/weights/<variant>-visual.pt  (visual-only)
-    4. hmf_vqa/weights/<variant>.pt  (full CLIP, visual auto-extracted)
-    5. ../Ali_InternVideo_PE/weights/<variant>.pt  (sibling project)
+    1. explicit_path (CLI ``--pe_weights``) — fallback if specified but missing
+    2. ``weights/PE_visual_only.pth``  (common name, highest priority)
+    3. ``weights/<variant>-visual.pt``  (visual-only)
+    4. ``weights/<variant>.pt``  (full CLIP, visual auto-extracted)
     """
     if explicit_path:
         if os.path.isfile(explicit_path):
@@ -90,9 +87,6 @@ def _resolve_weights(variant: str, explicit_path: str = None) -> str | None:
         os.path.join(_WEIGHTS_DIR, 'PE_visual_only.pth'),
         os.path.join(_WEIGHTS_DIR, f'{variant}-visual.pt'),
         os.path.join(_WEIGHTS_DIR, f'{variant}.pt'),
-        os.path.normpath(os.path.join(
-            _PROJECT_ROOT, '..', 'Ali_InternVideo_PE', 'weights', f'{variant}.pt'
-        )),
     ]
     for p in candidates:
         if os.path.isfile(p):
@@ -176,9 +170,6 @@ class PEEncoder(nn.Module):
                     os.path.join(_WEIGHTS_DIR, 'PE_visual_only.pth'),
                     os.path.join(_WEIGHTS_DIR, f'{variant}-visual.pt'),
                     os.path.join(_WEIGHTS_DIR, f'{variant}.pt'),
-                    os.path.normpath(os.path.join(
-                        _PROJECT_ROOT, '..', 'Ali_InternVideo_PE', 'weights', f'{variant}.pt'
-                    )),
                 ]
                 raise FileNotFoundError(
                     f"PE weights not found for variant '{variant}'.\n"

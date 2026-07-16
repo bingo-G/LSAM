@@ -13,7 +13,8 @@ What this module does, on the GPU, per clip, per sample:
   2. torch.stack([Y, U_up, V_up]) → [3, T, H, W]  (= dis_base, same as CPU path)
   3. (1080p fast-path) same-size skip instead of F.interpolate
   4. _crop_stack_patches_vec: [3, T, H, W] → [P, 3, T, ph, pw]
-  5. No semantic_target_size resize (ph == target_size == 224 in SD3 config)
+  5. No semantic_target_size resize (ph == target_size == 224 in the released
+     LSAM config)
 
 All ops above are bit-exact or numerically equivalent (float rounding < 1e-5)
 to the existing CPU path in `_sample_semantic_gmsavg(legacy_pe)`; the UV
@@ -176,7 +177,7 @@ def build_resize_dis_legacy_pe(
     (same-size skip) to stay bit-exact with the CPU fast-path.  4K inputs are
     handled by `F.interpolate(mode='bilinear')` (same as CPU `_resize_3t_hw`).
 
-    The current SD3 eval config uses ``semantic_gms_mode='stack'`` with
+    The released LSAM eval config uses ``semantic_gms_mode='stack'`` with
     ``patch_h == semantic_target_size``, so *no* semantic-side resize is
     performed (matching ``_sample_semantic_gmsavg`` behaviour).
     """

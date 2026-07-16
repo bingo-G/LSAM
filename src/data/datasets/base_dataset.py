@@ -530,61 +530,14 @@ class SampleMeta:
 
 
 # ============================================================================
-# Dataset path configurations (adapted from legacy dataset_config.py)
+# Dataset path configuration
 # ============================================================================
+# The inference-only release ships one built-in parser (``CVQM``). ``infer.py``
+# additionally registers an ad-hoc ``Custom`` parser at runtime for user-
+# supplied videos passed through ``--ref/--dis``, ``--ref_dir/--dis_dir`` or
+# ``--manifest`` — that path does not consult ``DATASET_CONFIGS`` at all.
 
 DATASET_CONFIGS = {
-    'CVQM_self': {
-        'root': _env_path('HMF_VQA_CVQM_SELF_ROOT', 'CVQM_self/1080p'),
-        'train_ann': 'CVQM_self_1080p_with_vmaf.xlsx',
-        'val_ann': 'CVQM_self_1080p_with_vmaf.xlsx',
-        'ref_root': _env_path('HMF_VQA_CVQM_SELF_REF_ROOT', 'CVQM_self/1080p/ORIG'),
-    },
-    'CVQM_self_whole': {
-        'root': _env_path('HMF_VQA_CVQM_SELF_ROOT', 'CVQM_self/1080p'),
-        'train_ann': 'CVQM_self_1080p_with_vmaf_whole.xlsx',
-        'val_ann': 'CVQM_self_1080p_with_vmaf_whole.xlsx',
-        'ref_root': _env_path('HMF_VQA_CVQM_SELF_REF_ROOT', 'CVQM_self/1080p/ORIG'),
-    },
-    'CVQM_self_4K': {
-        'root': _env_path('HMF_VQA_CVQM_SELF_4K_ROOT', 'CVQM_self/2160p'),
-        'train_ann': 'CVQM_self_4k_with_vmaf.xlsx',
-        'val_ann': 'CVQM_self_4k_with_vmaf.xlsx',
-        'ref_root': _env_path('HMF_VQA_CVQM_SELF_4K_REF_ROOT', 'CVQM_self/2160p/ORIG'),
-    },
-    'CVQM_self_4K_next': {
-        'root': _env_path('HMF_VQA_CVQM_SELF_4K_NEXT_ROOT', 'CVQM_self/2160p_next'),
-        'train_ann': 'CVQM_self_4knext_with_vmaf.xlsx',
-        'val_ann': 'CVQM_self_4knext_with_vmaf.xlsx',
-        'ref_root': _env_path('HMF_VQA_CVQM_SELF_4K_NEXT_REF_ROOT', 'CVQM_self/2160p_next/ORIG'),
-    },
-    'Waterloo4K': {
-        'root': _env_path('HMF_VQA_WATERLOO4K_ROOT', 'Waterloo4K'),
-        'train_ann': 'scores.txt',
-        'val_ann': 'scores.txt',
-        'ref_root': _env_path('HMF_VQA_WATERLOO4K_REF_ROOT', 'Waterloo4K/source'),
-        # Waterloo4K frame cache (container→ffmpeg→YUV420→resize 1080p→.bin)
-        'cache_root': _env_path('HMF_VQA_WATERLOO4K_CACHE_ROOT', ''),
-        'cache_root_5clip': _env_path('HMF_VQA_WATERLOO4K_CACHE_ROOT_5CLIP', ''),
-    },
-    'BVIHD': {
-        'root': _env_path('HMF_VQA_BVIHD_ROOT', 'BVI-HD'),
-        'train_ann': 'BVIHD.txt',
-        'val_ann': 'BVIHD.txt',
-        'ref_root': _env_path('HMF_VQA_BVIHD_REF_ROOT', 'BVI-HD/ORIG'),
-    },
-    'HDR_VDC': {
-        'root': _env_path('HMF_VQA_HDR_VDC_ROOT', 'HDR-VDC'),
-        'train_ann': 'HDR_VDC_JOD_Scores_final.csv',
-        'val_ann': 'HDR_VDC_JOD_Scores_final.csv',
-        'ref_root': _env_path('HMF_VQA_HDR_VDC_REF_ROOT', 'HDR-VDC/ref'),
-    },
-    'MCML4K': {
-        'root': _env_path('HMF_VQA_MCML4K_ROOT', 'MCML-4K'),
-        'train_ann': 'mcml_scores.txt',
-        'val_ann': 'mcml_scores.txt',
-        'ref_root': _env_path('HMF_VQA_MCML4K_REF_ROOT', 'MCML-4K/Video/Reference'),
-    },
     'CVQM': {
         'root': _env_path('HMF_VQA_CVQM_ROOT', 'CVQM'),
         'val_ann': 'CVQM_label_all_phase.xlsx',
@@ -593,77 +546,9 @@ DATASET_CONFIGS = {
             1: _env_path('HMF_VQA_CVQM_PHASE1_ROOT', 'CVQM/phase1'),
             2: _env_path('HMF_VQA_CVQM_PHASE2_ROOT', 'CVQM/decoded'),
         },
-        'ref_root': _env_path('HMF_VQA_CVQM_REF_ROOT', 'CVQM/all_original_convert_10bit_ffmpeg_correct_10s'),
+        'ref_root': _env_path('HMF_VQA_CVQM_REF_ROOT', 'CVQM/refs'),
         'npy_root': _env_path('HMF_VQA_CVQM_NPY_ROOT', 'CVQM/CVQM_npy_Phase12'),
         'frame_root': _env_path('HMF_VQA_CVQM_FRAME_ROOT', 'CVQM/CVQM_Image_Phase12'),
-    },
-    'LIVE_HDR': {
-        'root': _env_path('HMF_VQA_LIVE_HDR_ROOT', 'LIVE-HDR'),
-        'train_ann': 'train_video_info.csv',
-        'val_ann': 'train_video_info.csv',
-        'ref_root': _env_path('HMF_VQA_LIVE_HDR_REF_ROOT', 'LIVE-HDR/LIVE-HDR_FR'),
-    },
-    'AVT': {
-        'root': _env_path('HMF_VQA_AVT_ROOT', 'AVT-VQDB-UHD-1/AVT-VQDB-UHD-1-master'),
-        'ref_root': _env_path('HMF_VQA_AVT_REF_ROOT', 'AVT-VQDB-UHD-1/AVT-VQDB-UHD-1-master/src_videos'),
-        # AVT frame cache (container→ffmpeg decode→YUV420→resize 1080p→.bin)
-        # Build: bash scripts/build_cache.sh avt_legacy / avt_uniform / avt_5clip
-        'cache_root': _env_path('HMF_VQA_AVT_CACHE_ROOT', ''),
-        'cache_root_uniform': _env_path('HMF_VQA_AVT_CACHE_ROOT_UNIFORM', ''),
-        'cache_root_5clip': _env_path('HMF_VQA_AVT_CACHE_ROOT_5CLIP', ''),
-    },
-    'CVQAD': {
-        'root': _env_path('HMF_VQA_CVQAD_ROOT', 'CVQAD'),
-        'train_ann': 'Subjective_scores_train.csv',
-        'val_ann': 'Subjective_scores_validation.csv',
-        'test_ann': 'Subjective_scores_test.csv',
-        'test_root': _env_path('HMF_VQA_CVQAD_TEST_ROOT', 'CVQAD/Test/videos'),
-        'ref_root': _env_path('HMF_VQA_CVQAD_ROOT', 'CVQAD'),
-        'cache_root': _env_path('HMF_VQA_CVQAD_CACHE_ROOT', 'CVQAD'),
-        'cache_labels': _env_path('HMF_VQA_CVQAD_CACHE_LABELS', 'CVQAD/cvqac_labels_all_splits.csv'),
-        'cache_index': _env_path('HMF_VQA_CVQAD_CACHE_INDEX', 'CVQAD/cvqac_cache_index_all_splits.csv'),
-    },
-    'CVQAC': {
-        'root': _env_path('HMF_VQA_CVQAD_ROOT', 'CVQAD'),
-        'train_ann': 'Subjective_scores_train.csv',
-        'val_ann': 'Subjective_scores_validation.csv',
-        'test_ann': 'Subjective_scores_test.csv',
-        'test_root': _env_path('HMF_VQA_CVQAD_TEST_ROOT', 'CVQAD/Test/videos'),
-        'ref_root': _env_path('HMF_VQA_CVQAD_ROOT', 'CVQAD'),
-        'cache_root': _env_path('HMF_VQA_CVQAD_CACHE_ROOT', 'CVQAD'),
-        'cache_labels': _env_path('HMF_VQA_CVQAD_CACHE_LABELS', 'CVQAD/cvqac_labels_all_splits.csv'),
-        'cache_index': _env_path('HMF_VQA_CVQAD_CACHE_INDEX', 'CVQAD/cvqac_cache_index_all_splits.csv'),
-    },
-    'BVICC': {
-        'root': _env_path('HMF_VQA_BVICC_ROOT', 'BVI-CC'),
-        'train_ann': 'BVI_Processed_Data.xlsx',
-        'val_ann': 'BVI_Processed_Data.xlsx',
-        'test_ann': 'BVI_Processed_Data.xlsx',
-        'ref_root': _env_path('HMF_VQA_BVICC_REF_ROOT', 'BVI-CC/ORIG_MP4'),
-        'cache_root': _env_path('HMF_VQA_BVICC_CACHE_ROOT', ''),
-        'cache_root_5clip': _env_path('HMF_VQA_BVICC_CACHE_ROOT_5CLIP', ''),
-    },
-    'Netflix': {
-        'root': _env_path('HMF_VQA_NETFLIX_ROOT', 'Netflix_Public_dataset'),
-        'train_ann': 'NFLX_Processed_Data.xlsx',
-        'val_ann': 'NFLX_Processed_Data.xlsx',
-        'test_ann': 'NFLX_Processed_Data.xlsx',
-        'ref_root': _env_path('HMF_VQA_NETFLIX_REF_ROOT', 'Netflix_Public_dataset/ref'),
-    },
-    # ── TUM 1080p25 Data Set ──
-    # 48 distorted = 4 seq (CrowdRun/ParkJoy/InToTree/OldTownCross) × 3 codec (Dirac/HC/LC) × 4 RP.
-    # Reference: 4 YUV files in References/.
-    # Dirac outputs: .yuv (8-bit yuv420p, 1920x1080, 250 frames).
-    # HC / LC outputs: .h264 raw bitstreams; decoded on the fly by ffmpeg/pyav.
-    #   HC files live in a double-nested HC/HC/ sub-directory.
-    # Label file: TUM_1080p25_Data_Set_Subjective_Data.xlsx sheet=MOS, columns:
-    #   'Sequenz', 'Codec', 'Ratepoint', ..., 'MOS' (0-10 scale).
-    'TUM': {
-        'root': _env_path('HMF_VQA_TUM_ROOT', 'TUM_1080p25_Data_Set_org'),
-        'train_ann': 'TUM_1080p25_Data_Set_Subjective_Data.xlsx',
-        'val_ann': 'TUM_1080p25_Data_Set_Subjective_Data.xlsx',
-        'test_ann': 'TUM_1080p25_Data_Set_Subjective_Data.xlsx',
-        'ref_root': _env_path('HMF_VQA_TUM_REF_ROOT', 'TUM_1080p25_Data_Set_org/References'),
     },
 }
 
