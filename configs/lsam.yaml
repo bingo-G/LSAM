@@ -1,0 +1,132 @@
+# ============================================================================
+# ============================================================================
+# Full-reference video quality assessment configuration used to produce the
+# released LSAM checkpoint.
+#
+# Usage:
+#     python infer.py --eval_ckpt weights/lsam.pth \
+#         --ref /path/to/reference.yuv --dis /path/to/distorted.yuv \
+#         --width 1920 --height 1080 --bitdepth 10
+# ============================================================================
+
+task: FR
+
+save_dir: ./output
+
+train_datasets: ""                    # inference-only distribution
+target_label_key: vmaf_target
+test_dataset: CVQM
+cvqm_phase: all
+use_cvqm_npy: false
+
+branches: semantic
+vif_mode: 'off'
+vif_branch:
+  enable: false
+
+semantic_backbone: pe_b16
+pretrained: true
+pe_weights: ./weights/pretrained/PE_visual_only.pth
+semantic_fr_interaction: topiq_deep
+
+fr_align_mode: auto
+fr_align_ratio_threshold: 1.2
+
+semantic_sampler: gmsavg224
+semantic_target_size: 224
+semantic_gms_patches_per_frame: 8
+semantic_gms_grid_size: 7
+semantic_gms_mode: stack
+semantic_gms_legacy_pe: true
+num_frames: 8
+sampling_rate: 1
+temporal_sampler: legacy_pe
+num_clips_train: 1
+# 5-clip test-time averaging (matches the released LSAM numbers).
+num_clips_test: 5
+
+colorspace: bt709_imagenet
+
+pixel_format: yuv420p10le
+bitdepth: 10
+signal_range: auto
+tenbit_mode: shift8
+uv_upsample: bilinear
+resize_antialias: false
+
+losses: fidelity
+lambda_mse: 0.0
+lambda_rank: 0.0
+lambda_plcc: 0.0
+lambda_fidelity: 1.0
+rank_margin: 0.05
+optimizer: adamw
+scheduler: cosine
+lr_backbone: 1.5e-4
+lr_head: 7.5e-4
+weight_decay: 0.05
+warmup_ratio: 0.0
+epochs: 30
+batch_size: 1
+grad_accum: 1
+clip_grad: 5.0
+num_workers: 2
+val_batch_mul: 1.0
+test_batch_mul: 1.0
+
+temporal: 'off'
+
+rape: 'off'
+scale_token: 'off'
+resolution_token: true
+
+fusion_type: late_concat_mlp
+fusion_hidden: 256
+aggregator_mode: mean
+
+skip_val: true
+eval_interval: 1
+test_eval_interval: 1
+test_eval_mode: full
+
+save_ckpt_freq: 10
+save_latest_ckpt: false
+save_only_best_cvqm_inference: true
+debug_save_frames: 'off'
+amp: true
+find_unused_parameters: true
+seed: 100
+
+# ============================================================================
+# LSAM data-augmentation setting
+# ============================================================================
+aug_hflip: true                        # horizontal-flip augmentation (FR: ref+dis flipped together)
+
+semantic_branch:
+  apply_renorm: false
+  temporal_pool: tsm_mean
+  head_mode: repro_mlp
+  topiq_multilayer: true
+  topiq_layer_ids: [1, 4, 8, 12]
+  attn_heads: 8
+  dropout: 0.1
+  head_hidden1: 512
+  head_hidden2: 128
+  score_sigmoid: true
+  multipatch_input: true
+  patch_reduce: mean
+  patch_forward_chunk_size: 0
+  layer_decay_enable: true
+  layer_decay: 0.75
+  legacy_no_decay_rule: false
+  legacy_layer_id_rule: false
+  legacy_layer_id_prefix_bug: true
+  lr_scale_like_pe: true
+  num_sample_factor: 2.0
+  legacy_iter_lr: false
+  legacy_min_lr: 1.0e-6
+  legacy_spatial_train_step: true
+  legacy_single_rank_dist_sampler: true
+  legacy_disable_worker_init: false
+  legacy_temporal_window_sampling: true
+  eval_rescale: none          # disable the internal per-batch rescale

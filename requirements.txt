@@ -1,0 +1,122 @@
+# ============================================================================
+# LSAM — full dependency list
+# Exported from the reference `lsam` conda environment.
+# Target: Python 3.10 | CUDA 12.1 | PyTorch 2.1.0
+# ============================================================================
+
+# --- PyTorch ecosystem (CUDA 12.1) ---
+# torch==2.1.0+cu121
+# torchvision==0.16.0+cu121
+# torchaudio==2.1.0+cu121
+triton==2.1.0
+
+# --- Numerical & scientific computing ---
+numpy==1.26.4
+scipy==1.15.3
+scikit-learn==1.3.2
+pandas==2.3.3
+networkx==3.4.2
+sympy==1.14.0
+
+# --- Deep learning & model zoo ---
+timm==0.9.12
+einops==0.8.2
+huggingface_hub==1.3.5
+safetensors==0.7.0
+
+# --- Video / image I/O ---
+opencv-python==4.8.1.78
+av==17.0.0
+decord==0.6.0
+Pillow==10.1.0
+
+# --- Visualization & plotting ---
+matplotlib==3.8.2
+tensorboard==2.15.1
+
+# --- Data & file handling ---
+PyYAML==6.0.1
+openpyxl==3.1.5
+ftfy==6.3.1
+fsspec==2025.12.0
+filelock==3.20.0
+joblib==1.5.3
+
+# --- HTTP / networking ---
+requests==2.28.1
+urllib3==1.26.13
+certifi==2022.12.7
+charset-normalizer==2.1.1
+idna==3.4
+httpx==0.28.1
+httpcore==1.0.9
+h11==0.16.0
+anyio==4.12.1
+
+# --- Progress bars & CLI utilities ---
+tqdm==4.66.1
+psutil==7.0.0
+click==8.3.1
+shellingham==1.5.4
+typer-slim==0.21.1
+wcwidth==0.2.13
+blessed==1.20.0
+
+# --- Serialization ---
+protobuf==4.23.4
+regex==2026.1.15
+
+# --- Auth (TensorBoard transitive dependency) ---
+google-auth==2.48.0
+google-auth-oauthlib==1.2.4
+oauthlib==3.3.1
+requests-oauthlib==2.0.0
+rsa==4.9.1
+pyasn1==0.6.2
+pyasn1_modules==0.4.2
+
+# --- Template engines ---
+Jinja2==3.1.6
+MarkupSafe==2.1.5
+Markdown==3.10.1
+
+# --- Misc ---
+absl-py==2.4.0
+cffi==2.0.0
+cryptography==46.0.4
+contourpy==1.3.2
+cycler==0.12.1
+et_xmlfile==2.0.0
+exceptiongroup==1.3.1
+fonttools==4.61.1
+gpustat==1.1.1
+grpcio==1.76.0
+hf-xet==1.2.0
+kiwisolver==1.4.9
+meson==1.10.1
+mpmath==1.3.0
+ninja==1.13.0
+nvidia-ml-py==12.570.86
+packaging==26.0
+pycparser==3.0
+pyparsing==3.3.2
+python-dateutil==2.9.0.post0
+pytz==2025.2
+six==1.17.0
+threadpoolctl==3.6.0
+typing_extensions==4.15.0
+tzdata==2025.3
+Werkzeug==3.1.5
+
+# --- setuptools & pip ---
+setuptools==80.10.2
+wheel==0.46.3
+pip==25.3
+
+# ============================================================================
+# System dependencies (not installed via pip)
+# ============================================================================
+# 1. CUDA Toolkit 12.1
+# 2. ffmpeg (system-wide)
+#    Ubuntu: sudo apt install -y ffmpeg
+#    Conda:  conda install -c conda-forge ffmpeg
