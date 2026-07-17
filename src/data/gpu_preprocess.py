@@ -40,6 +40,38 @@ import torch
 import torch.nn.functional as F
 
 
+def _emulate_offline_uhd_grid(x_3t: torch.Tensor) -> torch.Tensor:
+    """GPU 复刻 CPU 侧 ``_resize_3t_hw`` 的 UHD→sub-UHD 字节级模拟。
+
+    与 ``datamodule._emulate_offline_uhd_grid`` 完全一致：模拟
+    shift8 → resize → reverse_shift8 → 写 YUV → 重新读回 → shift8 的离线链路
+    （tools/build_train_4k_resize.py 生成 Phase2_Resize1080p 的过程），
+    使 on-the-fly 的 GPU resize 与预先离线降采样的 YUV 文件在数值上对齐。
+
+    仅在源为 UHD(>=1500 行)、目标 <1500 行(即 4K→1080p)时调用。
+    输入/输出均为已 stack 的 ``[3, T, H, W]`` (Y/U_up/V_up)。
+    """
+    _, T, tgt_h, tgt_w = x_3t.shape
+    dst_h2, dst_w2 = tgt_h // 2, tgt_w // 2
+    y = x_3t[0:1]                                            # [1, T, H, W]
+    uv = x_3t[1:3]                                           # [2, T, H, W]
+    # 把 UV 下采样回色度分辨率 (dst_h/2, dst_w/2)
+    uv_small = F.interpolate(
+        uv.permute(1, 0, 2, 3),                              # [T, 2, H, W]
+        size=(dst_h2, dst_w2), mode='bilinear', align_corners=False,
+    )
+    # Y(全分辨率) + UV(色度分辨率) 量化到 n/255 网格 (uint8)
+    y_q = torch.clamp((y * 255.0).round(), 0.0, 255.0) / 255.0
+    uv_q_small = torch.clamp((uv_small * 255.0).round(), 0.0, 255.0) / 255.0
+    # 量化后的 UV 再上采样回全分辨率 —— 对应读取离线文件时的 align_yuv
+    uv_q_full = F.interpolate(
+        uv_q_small, size=(tgt_h, tgt_w),
+        mode='bilinear', align_corners=False,
+    ).permute(1, 0, 2, 3).contiguous()                        # [2, T, H, W]
+    out = torch.cat([y_q, uv_q_full], dim=0)                  # [3, T, H, W]
+    return out.contiguous()
+
+
 def _legacy_grid_positions(
     H: int, W: int,
     patch_h: int, patch_w: int,
@@ -208,6 +240,10 @@ def build_resize_dis_legacy_pe(
             mode='bilinear', align_corners=False,
         )
         dis_base = frames_r.permute(1, 0, 2, 3).contiguous()  # [3,T,tgt_h,tgt_w]
+        # UHD(>=1500 行) → sub-UHD 降采样与离线预处理(Phase2_Resize1080p)
+        # 保持一致的字节级对齐，行为与 CPU 侧 datamodule._resize_3t_hw 相同。
+        if H >= 1500 and tgt_h < 1500:
+            dis_base = _emulate_offline_uhd_grid(dis_base)
 
     # --- Step 4: legacy_pe grid patch positions ---
     positions = _legacy_grid_positions(
